@@ -27,6 +27,7 @@ class User(AbstractUser):
         null=True,
         blank=True
     )
+    role = models.CharField(max_length=200)
 
     @property
     def is_moderator(self):
