@@ -1,17 +1,48 @@
-# from django.contrib.auth import get_user_model
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 
-# User = get_user_model()
 
+class User(AbstractUser):
+    ADMIN = 'admin'
+    MODERATOR = 'moderator'
+    USER = 'user'
+    ROLES = [
+        (ADMIN, 'Administrator'),
+        (MODERATOR, 'Moderator'),
+        (USER, 'User'),
+    ]
 
-class Auth(models.Model):
-    pass
+    email = models.EmailField(
+        verbose_name='Адрес эл.почты',
+        unique=True,
+    )
+    username = models.CharField(
+        verbose_name='Имя пользователя',
+        max_length=150,
+        null=True,
+        unique=True
+    )
+    bio = models.TextField(
+        verbose_name='Немного о себе',
+        null=True,
+        blank=True
+    )
 
-# Добавил модель юзера ибо там какие то извращени по условию 
-# и просто  User = get_user_model() не сработает
-#!!!!!!Возможно я не прав
-class User(models.Model):
-    pass
+    @property
+    def is_moderator(self):
+        return self.role == self.MODERATOR
+
+    @property
+    def is_admin(self):
+        return self.role == self.ADMIN
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username']
+
+    class Meta:
+        ordering = ['id']
+        verbose_name = 'Пользователь'
+        verbose_name_plural = 'Пользователи'
 
 
 class Category(models.Model):
