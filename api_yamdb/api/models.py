@@ -27,8 +27,43 @@ class Title(models.Model):
 
 
 class Review(models.Model):
-    pass
+    author = models.ForeignKey(
+        User, 
+        on_delete=models.CASCADE, 
+        related_name='reviews'
+    )
+    text = models.TextField()
+    pub_date = models.DateTimeField(
+        'Дата публикации', 
+        auto_now_add=True
+    )
+    title_id = models.ForeignKey(
+        Title, 
+        on_delete=models.CASCADE, 
+        related_name='reviews'
+    )
+    score = models.IntegerField()
+
+    def __str__(self):
+        return self.text
 
 
 class Comment(models.Model):
-    pass
+    author = models.ForeignKey(
+        User, 
+        on_delete=models.CASCADE, 
+        related_name='comments'
+    )
+    text = models.TextField()
+    pub_date = models.DateTimeField(
+        'Дата публикации', 
+        auto_now_add=True
+    )
+    review_id = models.ForeignKey(
+        Review, 
+        on_delete=models.CASCADE, 
+        related_name='comments'
+    )
+
+    def __str__(self):
+        return self.text
