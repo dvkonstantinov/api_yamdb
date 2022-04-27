@@ -5,17 +5,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField
 
-from .models import Auth, User, Category, Genre, Title, Review, TitleGenre
-
-#User = get_user_model()
-
-
-class AuthSerializer(serializers.ModelSerializer):
-    pass
-
-# Так же не знаю что с юзером делать
-class UserSerializer(serializers.ModelSerializer):
-    pass
+from users.models import Category, Genre, Title, Review, TitleGenre, Comment
 
 
 class CategoryCreateUpdateSerializer(serializers.ModelSerializer):

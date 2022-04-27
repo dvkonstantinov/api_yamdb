@@ -7,19 +7,10 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .permissions import IsAdminOrReadOnlyPermission
-from .models import Auth, User, Category, Genre, Title, Review, Comment
-from .serializers import AuthSerializer, UserSerializer, CategorySerializer, \
+from users.models import User, Category, Genre, Title, Review, Comment
+from .serializers import CategorySerializer, \
     CategoryCreateUpdateSerializer, GenreCreateUpdateSerializer
 from .serializers import GenreSerializer, TitleSerializer, ReviewSerializer, CommentSerializer
-
-
-class AuthViewSet(viewsets.ModelViewSet):
-    pass
-
-
-# Так же не знаю по поводу юзера
-class UserViewSet(viewsets.ModelViewSet):
-    pass
 
 
 class CategoryViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
@@ -72,9 +63,9 @@ class TitleViewSet(viewsets.ModelViewSet):
 
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
-    permission_classes = (permissions.AllowAny,)
+    # permission_classes = (permissions.AllowAny,)
     filter_backends = (filters.SearchFilter,)
-    pagination_class = LimitOffsetPagination
+    # pagination_class = LimitOffsetPagination
 
     def get_queryset(self):
         title = get_object_or_404(Title, pk=self.kwargs.get('title_id'))
@@ -89,9 +80,9 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
-    permission_classes = (permissions.AllowAny,)
+    # permission_classes = (permissions.AllowAny,)
     filter_backends = (filters.SearchFilter,)
-    pagination_class = LimitOffsetPagination
+    # pagination_class = LimitOffsetPagination
 
     def get_queryset(self):
         title = get_object_or_404(Title, pk=self.kwargs.get('title_id'))

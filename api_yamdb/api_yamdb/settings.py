@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'django_filters',
     'djoser',
     'api',
+    'users',
 ]
 
 MIDDLEWARE = [
@@ -109,7 +110,7 @@ STATIC_URL = '/static/'
 
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static/'),)
 
-AUTH_USER_MODEL = 'api.User'
+AUTH_USER_MODEL = 'users.User'
 
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 
