@@ -22,12 +22,17 @@ class User(AbstractUser):
         null=True,
         unique=True
     )
+    role = models.CharField(
+        verbose_name='Роль',
+        max_length=100,
+        choices=ROLES,
+        default=USER
+    )
     bio = models.TextField(
         verbose_name='Немного о себе',
         null=True,
         blank=True
     )
-    role = models.CharField(max_length=200)
 
     @property
     def is_moderator(self):
