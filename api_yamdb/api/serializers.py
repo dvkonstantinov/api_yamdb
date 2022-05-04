@@ -4,8 +4,10 @@ import datetime
 from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField
 from rest_framework.validators import UniqueValidator
+from django.shortcuts import get_object_or_404
 
-from users.models import Category, Genre, Title, Review, TitleGenre, Comment, User
+from users.models import Category, Genre, Title, TitleGenre, User
+from reviews.models import Review, Comment
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -69,13 +71,24 @@ class TitleSerializer(serializers.ModelSerializer):
 
 class ReviewSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
+        many=False,
         read_only=True,
         slug_field='username'
     )
 
     class Meta:
         fields = ('id', 'text', 'author', 'score', 'pub_date')
+        read_only_fields = ('id', 'author', 'pub_date')
         model = Review
+
+    def validate(self, data):
+        if Review.objects.filter(
+                title=self.context['view'].kwargs['title_id'],
+                author=self.context['request'].user
+        ).exists() and self.context['request'].method == 'POST':
+            raise serializers.ValidationError(
+                'Нельзя оставлять больше 1 отзыва на произведение')
+        return data
 
 
 class CommentSerializer(serializers.ModelSerializer):
