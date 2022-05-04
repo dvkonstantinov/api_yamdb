@@ -1,3 +1,5 @@
+import django_filters
+from django.db.models import Avg
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
@@ -13,60 +15,59 @@ from rest_framework_simplejwt.tokens import AccessToken
 from .permissions import (IsAdmin, IsAdminOrReadOnly,
                           IsAdminModeratorOwnerOrReadOnly)
 from users.models import User, Category, Genre, Title, Review, Comment
-from .serializers import CategorySerializer, \
-    CategoryCreateUpdateSerializer, GenreCreateUpdateSerializer
 from .serializers import (GenreSerializer, TitleSerializer,
                           ReviewSerializer, CommentSerializer,
                           UserEditSerializer, UserSerializer,
-                          RegisterDataSerializer, TokenSerializer)
+                          RegisterDataSerializer, TokenSerializer,
+                          CategorySerializer, TitleGetSerializer)
 
 
 class CategoryViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                       mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = Category.objects.all()
-    # permission_classes = (IsAdminOrReadOnlyPermission,)
+    permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name', 'slug',)
     lookup_field = 'slug'
-
-    def get_serializer_class(self):
-        if hasattr(self, 'action') and (self.action == 'create'
-                                        or self.action == 'update'):
-            return CategoryCreateUpdateSerializer
-        return CategorySerializer
+    serializer_class = CategorySerializer
 
 
 class GenreViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                    mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = Genre.objects.all()
-    # permission_classes = (IsAdminOrReadOnlyPermission,)
+    permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name', 'slug',)
     lookup_field = 'slug'
+    serializer_class = GenreSerializer
 
-    def get_serializer_class(self):
-        if hasattr(self, 'action') and (self.action == 'create'
-                                        or self.action == 'update'):
-            return GenreCreateUpdateSerializer
-        return GenreSerializer
+
+class TitleFilter(django_filters.FilterSet):
+    name = django_filters.CharFilter(field_name='name', lookup_expr='contains')
+    genre = django_filters.CharFilter(field_name='genre__slug',
+                                      lookup_expr='contains')
+    category = django_filters.CharFilter(field_name='category__slug',
+                                      lookup_expr='contains')
+    year = django_filters.CharFilter(field_name='year', lookup_expr='exact')
+
+    class Meta:
+        model = Title
+        fields = [
+            'name', 'genre', 'category', 'year'
+        ]
 
 
 class TitleViewSet(viewsets.ModelViewSet):
+    queryset = Title.objects.all().annotate(Avg('reviews__score'))
     serializer_class = TitleSerializer
-    # permission_classes = (IsAdminOrReadOnlyPermission,)
+    permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (DjangoFilterBackend,)
-    filterset_fields = ('category__slug', 'genre__slug', 'name', 'year')
+    filterset_class = TitleFilter
 
-    def get_queryset(self):
-        all_fields = {
-            'genre__slug': self.request.query_params.get('genre'),
-            'category__slug': self.request.query_params.get('category'),
-            'name': self.request.query_params.get('name'),
-            'year': self.request.query_params.get('year'),
-        }
-        filter_fields = {k: v for k, v in all_fields.items() if v is not None}
-        queryset = Title.objects.filter(**filter_fields)
-        return queryset
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return TitleGetSerializer
+        return TitleSerializer
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
