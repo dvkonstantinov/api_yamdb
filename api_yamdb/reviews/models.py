@@ -3,22 +3,21 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 
 from users.models import User, Title
 
-# Create your models here.
 
 class Review(models.Model):
     author = models.ForeignKey(
-        User, 
-        on_delete=models.CASCADE, 
+        User,
+        on_delete=models.CASCADE,
         related_name='reviews'
     )
     text = models.TextField()
     pub_date = models.DateTimeField(
-        'Дата публикации', 
+        'Дата публикации',
         auto_now_add=True
     )
     title = models.ForeignKey(
-        Title, 
-        on_delete=models.CASCADE, 
+        Title,
+        on_delete=models.CASCADE,
         related_name='reviews'
     )
     score = models.IntegerField(
@@ -44,22 +43,20 @@ class Review(models.Model):
 
 class Comment(models.Model):
     author = models.ForeignKey(
-        User, 
-        on_delete=models.CASCADE, 
+        User,
+        on_delete=models.CASCADE,
         related_name='comments',
-        verbose_name='Автор'
     )
     text = models.TextField()
     pub_date = models.DateTimeField(
-        'Дата публикации', 
+        'Дата публикации',
         auto_now_add=True,
         db_index=True
     )
-    review_id = models.ForeignKey(
-        Review, 
-        on_delete=models.CASCADE, 
+    review = models.ForeignKey(
+        Review,
+        on_delete=models.CASCADE,
         related_name='comments',
-        verbose_name='Отзыв'
     )
 
     def __str__(self):
