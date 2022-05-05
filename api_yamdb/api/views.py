@@ -1,4 +1,3 @@
-import django_filters
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.tokens import default_token_generator
@@ -12,6 +11,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework_simplejwt.tokens import AccessToken
 
+from .filters import TitleFilter
 from .permissions import (IsAdmin, IsAdminOrReadOnly,
                           IsAdminModeratorOwnerOrReadOnly)
 from users.models import User, Category, Genre, Title
@@ -43,27 +43,13 @@ class GenreViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
     serializer_class = GenreSerializer
 
 
-class TitleFilter(django_filters.FilterSet):
-    name = django_filters.CharFilter(field_name='name', lookup_expr='contains')
-    genre = django_filters.CharFilter(field_name='genre__slug',
-                                      lookup_expr='contains')
-    category = django_filters.CharFilter(field_name='category__slug',
-                                         lookup_expr='contains')
-    year = django_filters.CharFilter(field_name='year', lookup_expr='exact')
-
-    class Meta:
-        model = Title
-        fields = [
-            'name', 'genre', 'category', 'year'
-        ]
-
-
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all().annotate(Avg('reviews__score'))
     serializer_class = TitleSerializer
     permission_classes = (IsAdminOrReadOnly,)
-    filter_backends = (DjangoFilterBackend,)
+    filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
     filterset_class = TitleFilter
+    ordering = ('id',)
 
     def get_serializer_class(self):
         if self.request.method == 'GET':

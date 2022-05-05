@@ -20,6 +20,7 @@ class Test04TitleAPI:
     def test_02_title_admin(self, admin_client):
         genres = create_genre(admin_client)
         categories = create_categories(admin_client)
+        # print(categories)
         data = {}
         response = admin_client.post('/api/v1/titles/', data=data)
         assert response.status_code == 400, (
@@ -28,6 +29,8 @@ class Test04TitleAPI:
         data = {'name': 'Поворот туда', 'year': 2000, 'genre': [genres[0]['slug'], genres[1]['slug']],
                 'category': categories[0]['slug'], 'description': 'Крутое пике'}
         response = admin_client.post('/api/v1/titles/', data=data)
+        # print(data)
+        # print(response.content)
         assert response.status_code == 201, (
             'Проверьте, что при POST запросе `/api/v1/titles/` с правильными данными возвращает статус 201'
         )
@@ -132,6 +135,7 @@ class Test04TitleAPI:
         )
         response = admin_client.get('/api/v1/titles/?name=Поворот')
         data = response.json()
+        # print(data)
         assert len(data['results']) == 2, (
             'Проверьте, что при GET запросе `/api/v1/titles/` фильтуется по `name` параметру названия'
         )
@@ -175,6 +179,7 @@ class Test04TitleAPI:
             'category': categories[1]['slug']
         }
         response = admin_client.patch(f'/api/v1/titles/{titles[0]["id"]}/', data=data)
+        # print(response.content)
         assert response.status_code == 200, (
             'Проверьте, что при PATCH запросе `/api/v1/titles/{title_id}/` возвращается статус 200'
         )
