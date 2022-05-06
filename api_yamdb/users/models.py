@@ -6,6 +6,9 @@ class User(AbstractUser):
     ADMIN = 'admin'
     MODERATOR = 'moderator'
     USER = 'user'
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username']
+
     ROLES = [
         (ADMIN, 'Administrator'),
         (MODERATOR, 'Moderator'),
@@ -15,12 +18,6 @@ class User(AbstractUser):
     email = models.EmailField(
         verbose_name='Адрес эл.почты',
         unique=True,
-    )
-    username = models.CharField(
-        verbose_name='Имя пользователя',
-        max_length=150,
-        null=True,
-        unique=True
     )
     role = models.CharField(
         verbose_name='Роль',
@@ -34,6 +31,11 @@ class User(AbstractUser):
         blank=True
     )
 
+    class Meta:
+        ordering = ['id']
+        verbose_name = 'Пользователь'
+        verbose_name_plural = 'Пользователи'
+
     @property
     def is_moderator(self):
         return self.role == self.MODERATOR
@@ -41,14 +43,6 @@ class User(AbstractUser):
     @property
     def is_admin(self):
         return self.role == self.ADMIN
-
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']
-
-    class Meta:
-        ordering = ['id']
-        verbose_name = 'Пользователь'
-        verbose_name_plural = 'Пользователи'
 
 
 class Category(models.Model):

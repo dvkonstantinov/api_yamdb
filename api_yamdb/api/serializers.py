@@ -141,14 +141,14 @@ class RegisterDataSerializer(serializers.ModelSerializer):
         ]
     )
 
+    class Meta:
+        fields = ("username", "email")
+        model = User
+
     def validate_username(self, value):
         if value.lower() == "me":
             raise serializers.ValidationError("Username 'me' is not valid")
         return value
-
-    class Meta:
-        fields = ("username", "email")
-        model = User
 
 
 class TokenSerializer(serializers.Serializer):
