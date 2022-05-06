@@ -20,25 +20,25 @@ class Review(models.Model):
         on_delete=models.CASCADE,
         related_name='reviews'
     )
-    score = models.IntegerField(
+    score = models.PositiveSmallIntegerField(
         validators=[
             MinValueValidator(
-                1, message='Поставь побольше'
+                1, message='Оценка не может быть ниже 1'
             ),
             MaxValueValidator(
-                10, message='Поставь поменьше'
+                10, message='Оценка не может быть выше 10'
             ),
         ]
     )
-
-    def __str__(self):
-        return self.text
 
     class Meta:
         constraints = [models.UniqueConstraint(
             fields=['title', 'author'],
             name='unique_review',
         )]
+
+    def __str__(self):
+        return self.text
 
 
 class Comment(models.Model):
