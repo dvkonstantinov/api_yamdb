@@ -51,14 +51,6 @@ class TitleSerializer(serializers.ModelSerializer):
                 "Год не может быть больше текущего")
         return value
 
-    def validate(self, data):
-        required_fields = ['year', 'name', 'category', 'genre']
-        for field in required_fields:
-            if field not in data:
-                raise serializers.ValidationError(
-                    f'Поле "{field}" обязательно для заполнения')
-        return data
-
 
 class ReviewSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
