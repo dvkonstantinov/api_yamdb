@@ -4,8 +4,8 @@ from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField
 from rest_framework.validators import UniqueValidator
 
-from users.models import Category, Genre, Title, User
-from reviews.models import Review, Comment
+from users.models import User
+from reviews.models import Review, Comment, Category, Genre, Title
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -44,20 +44,20 @@ class TitleSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'year', 'description', 'category', 'genre']
         model = Title
 
-        def validate_year(self, value):
-            now_year = datetime.date.today().year
-            if value > now_year:
-                raise serializers.ValidationError(
-                    "Год не может быть больше текущего")
-            return value
+    def validate_year(self, value):
+        now_year = datetime.date.today().year
+        if value > now_year:
+            raise serializers.ValidationError(
+                "Год не может быть больше текущего")
+        return value
 
-        def validate(self, data):
-            required_fields = ['year', 'name', 'category', 'genre']
-            for field in required_fields:
-                if field not in data:
-                    raise serializers.ValidationError(
-                        f'Поле "{field}" обязательно для заполнения')
-            return data
+    def validate(self, data):
+        required_fields = ['year', 'name', 'category', 'genre']
+        for field in required_fields:
+            if field not in data:
+                raise serializers.ValidationError(
+                    f'Поле "{field}" обязательно для заполнения')
+        return data
 
 
 class ReviewSerializer(serializers.ModelSerializer):
@@ -134,14 +134,14 @@ class RegisterDataSerializer(serializers.ModelSerializer):
         ]
     )
 
+    class Meta:
+        fields = ("username", "email")
+        model = User
+
     def validate_username(self, value):
         if value.lower() == "me":
             raise serializers.ValidationError("Username 'me' is not valid")
         return value
-
-    class Meta:
-        fields = ("username", "email")
-        model = User
 
 
 class TokenSerializer(serializers.Serializer):

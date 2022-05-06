@@ -1,7 +1,45 @@
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 
-from users.models import User, Title
+from users.models import User
+
+
+class Category(models.Model):
+    name = models.CharField(max_length=200)
+    slug = models.SlugField(unique=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        ordering = ['-id']
+
+
+class Title(models.Model):
+    name = models.CharField(max_length=200)
+    year = models.PositiveSmallIntegerField(db_index=True)
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL,
+                                 null=True, related_name='titles')
+    genre = models.ManyToManyField('Genre',
+                                   related_name='titles')
+    description = models.TextField(blank=True, null=True)
+
+    class Meta:
+        ordering = ['-id']
+
+    def __str__(self):
+        return self.name
+
+
+class Genre(models.Model):
+    name = models.CharField(max_length=200)
+    slug = models.SlugField(unique=True)
+
+    class Meta:
+        ordering = ['-id']
+
+    def __str__(self):
+        return self.name
 
 
 class Review(models.Model):

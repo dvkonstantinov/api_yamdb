@@ -14,8 +14,8 @@ from rest_framework_simplejwt.tokens import AccessToken
 from .filters import TitleFilter
 from .permissions import (IsAdmin, IsAdminOrReadOnly,
                           IsAdminModeratorOwnerOrReadOnly)
-from users.models import User, Category, Genre, Title
-from reviews.models import Review
+from users.models import User
+from reviews.models import Review, Category, Genre, Title
 from .serializers import (GenreSerializer, TitleSerializer,
                           ReviewSerializer, CommentSerializer,
                           UserEditSerializer, UserSerializer,
