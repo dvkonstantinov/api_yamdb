@@ -1,11 +1,6 @@
 from django.contrib import admin
 
-from users.models import Genre, Title, Category, TitleGenre, User
-
-
-class TitleGenreInline(admin.TabularInline):
-    model = TitleGenre
-    extra = 2
+from users.models import Genre, Title, Category, User
 
 
 class GenreAdmin(admin.ModelAdmin):
@@ -18,10 +13,8 @@ class CategoryAdmin(admin.ModelAdmin):
 
 class TitleAdmin(admin.ModelAdmin):
     list_display = ['name', 'year', 'category']
-    inlines = (TitleGenreInline,)
 
 
-admin.site.register(Genre, GenreAdmin)
 admin.site.register(Title, TitleAdmin)
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(User)

@@ -4,7 +4,7 @@ from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField
 from rest_framework.validators import UniqueValidator
 
-from users.models import Category, Genre, Title, TitleGenre, User
+from users.models import Category, Genre, Title, User
 from reviews.models import Review, Comment
 
 
@@ -58,13 +58,6 @@ class TitleSerializer(serializers.ModelSerializer):
                     raise serializers.ValidationError(
                         f'Поле "{field}" обязательно для заполнения')
             return data
-
-        def create(self, validated_data):
-            genres = validated_data.pop('genre')
-            instance = Title.objects.create(**validated_data)
-            for genre in genres:
-                TitleGenre.objects.create(title=instance, genre=genre)
-            return instance
 
 
 class ReviewSerializer(serializers.ModelSerializer):
